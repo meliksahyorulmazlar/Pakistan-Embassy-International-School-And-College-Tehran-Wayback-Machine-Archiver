@@ -49,25 +49,17 @@ class WaybackArchive:
     # This method will save all the links on the wayback machine
     def save_all(self)->None:
         for link in self.found_links:
+            print(f'saving {link}')
             self.save(link)
             time.sleep(2)
 
     # This method will save a given website link on the wayback machine
     def save(self, site: str) -> None:
         try:
-            requests.get(
-                "https://web.archive.org/save/" + site,
-                params={
-                    "capture_all": "1",
-                    "if_not_archived_within": "30d"
-                },
-                headers={
-                    "User-Agent": "Mozilla/5.0 (compatible; ArchiveBot/1.0)"
-                },
-                timeout=15
-            )
-        except requests.exceptions.Timeout:
-            pass  # Wayback is still processing
+            requests.get("https://web.archive.org/save/" + site)
+        except requests.exceptions.ConnectionError:
+            print('connection error')
+            pass
 
 
 if __name__ == "__main__":
