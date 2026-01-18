@@ -18,7 +18,7 @@ class WaybackArchive:
         soup = BeautifulSoup(requests.get('https://peisctehran.com').text,'lxml')
         soup = str(soup)
         links = re.findall(r'"(.*?)"', soup)
-        links = [link for link in links if link.startswith('https://peisctehran')]
+        links = [link for link in links if link.startswith('https://peisctehran')  and 'css' not in link and 'js' not in link ]
         self.found_links.append('https://peisctehran.com/')
         self.found_links.append("https://peisctehran.com")
 
@@ -37,7 +37,7 @@ class WaybackArchive:
                     soup = BeautifulSoup(requests.get(links[0]).text, 'lxml')
                     soup = str(soup)
                     new_links = re.findall(r'"(.*?)"', soup)
-                    new_links = [link for link in new_links if link.startswith('https://peisctehran')]
+                    new_links = [link for link in new_links if link.startswith('https://peisctehran') and 'css' not in link and 'js' not in link]
                     for new_link in new_links:
                         if new_link not in self.found_links:
                             if new_link not in links:
