@@ -16,7 +16,9 @@ class WaybackArchive:
         self.find()
         self.organize_list()
         self.save_all()
+        os.remove("last_link.txt")
 
+    
     # This will check if there is a last link
     def get_link(self)->None:
         with open('last_link.txt','r') as f:
