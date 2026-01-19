@@ -1,4 +1,6 @@
 import requests,lxml,re,time,os
+# The previous site url was http://pisctehran.com
+
 from bs4 import BeautifulSoup
 
 from bs4 import XMLParsedAsHTMLWarning
