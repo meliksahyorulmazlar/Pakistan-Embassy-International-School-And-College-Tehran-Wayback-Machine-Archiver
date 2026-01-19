@@ -1,19 +1,27 @@
-import requests,lxml,re,time
+import requests,lxml,re,time,os
 from bs4 import BeautifulSoup
 
 from bs4 import XMLParsedAsHTMLWarning
 import warnings
-
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
-
 
 
 class WaybackArchive:
     def __init__(self):
+        self.start_time = time.time()
         self.found_links = []
         self.find()
         self.save_all()
+        #if it runs all the links- there is no need for this file to exist
+        os.remove("last_link.txt")
 
+    # This method checks if it should start recording the last link
+    def late_checker(self)->bool:
+        current_time = time.time()- self.start_time
+        cutoff = (5*3600)+ (50*60)
+        return current_time-cutoff >= 0
+
+    # This will find all the valid links to be archived on the wayback machine
     def find(self):
         soup = BeautifulSoup(requests.get('https://peisctehran.com').text,'lxml')
         soup = str(soup)
@@ -59,8 +67,13 @@ class WaybackArchive:
             requests.get("https://web.archive.org/save/" + site)
         except requests.exceptions.ConnectionError:
             print('connection error')
-            pass
-
+            with open("connection_errors.txt",'a') as f:
+                f.write(f"{site}\n")
+        finally:
+            # This will record the last link worked on after 5 hours and 50 minutes
+            if self.late_checker():
+                with open("last_link.txt",'w') as f:
+                    f.write(f"{site}")
 
 if __name__ == "__main__":
     wa = WaybackArchive()
