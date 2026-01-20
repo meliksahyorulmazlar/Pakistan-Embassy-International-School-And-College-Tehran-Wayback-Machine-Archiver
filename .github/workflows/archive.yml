@@ -1,12 +1,12 @@
-name: 4-Hour Wayback Archive
+name: Wayback Archive (4h @ :15 DC)
 
 on:
   schedule:
-    # ⏰ Every 4 hours (UTC-based)
-    - cron: "0 */4 * * *"
+    # Every 4 hours starting at 4:15 AM DC time
+    - cron: "15 1,5,9,13,17,21 * * *"
   workflow_dispatch:
 
-# 🔒 Absolutely prevent overlap
+# 🔒 Prevent overlap, always
 concurrency:
   group: wayback-archiver
   cancel-in-progress: true
@@ -15,20 +15,19 @@ jobs:
   archive:
     runs-on: ubuntu-latest
 
-    # ⛔ Hard stop just under 4 hours
+    # ⛔ Hard stop at 3h 55m
     timeout-minutes: 235
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install requests beautifulsoup4 lxml
 
       - name: Run Wayback archiver
         run: python wayback_archive.py
