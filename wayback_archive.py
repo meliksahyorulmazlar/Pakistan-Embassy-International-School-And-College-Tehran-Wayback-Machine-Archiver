@@ -1,6 +1,4 @@
-import requests,lxml,re,time,os
-# The previous site url was http://pisctehran.com
-
+import requests,lxml,re,time,os,random
 from bs4 import BeautifulSoup
 
 from bs4 import XMLParsedAsHTMLWarning
@@ -14,13 +12,11 @@ class WaybackArchive:
         self.found_links = []
         self.find()
         self.save_all()
-        #if it runs all the links- there is no need for this file to exist
-        os.remove("last_link.txt")
 
     # This method checks if it should start recording the last link
     def late_checker(self)->bool:
         current_time = time.time()- self.start_time
-        cutoff = (5*3600)+ (50*60)
+        cutoff =  (55*60)
         return current_time-cutoff >= 0
 
     # This will find all the valid links to be archived on the wayback machine
@@ -55,27 +51,25 @@ class WaybackArchive:
                                 links.append(new_link)
                     self.found_links.append(links[0])
                     links.pop(0)
+        random.shuffle(self.found_links)
 
     # This method will save all the links on the wayback machine
     def save_all(self)->None:
         for link in self.found_links:
             print(f'saving {link}')
             self.save(link)
+            # the code stops working if it has passed 55 minutes
+            if self.late_checker():
+                break
             time.sleep(2)
 
     # This method will save a given website link on the wayback machine
     def save(self, site: str) -> None:
         try:
             requests.get("https://web.archive.org/save/" + site,timeout=45)
-        except requests.exceptions.RequestException as e:
-            print(f"connection error: {e}")
-            with open("connection_errors.txt", "a") as f:
-                f.write(site + "\n")
-        finally:
-            # This will record the last link worked on after 5 hours and 50 minutes
-            if self.late_checker():
-                with open("last_link.txt",'w') as f:
-                    f.write(f"{site}")
+        except requests.exceptions.RequestException:
+            print('connection error')
+
 
 if __name__ == "__main__":
     wa = WaybackArchive()
