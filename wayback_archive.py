@@ -10,8 +10,10 @@ class WaybackArchive:
     def __init__(self):
         self.start_time = time.time()
         self.found_links = []
+        
         self.find()
         self.save_all()
+        
 
     # This method checks if it should start recording the last link
     def late_checker(self)->bool:
@@ -56,6 +58,12 @@ class WaybackArchive:
 
     # This method will save all the links on the wayback machine
     def save_all(self)->None:
+        self.session = requests.Session()
+        self.session.headers.update({
+            "User-Agent": "Mozilla/5.0 (compatible; WaybackArchiver/1.0)",
+            "Accept": "*/*",
+            "Connection": "close"
+        })
         for link in self.found_links:
             print(f'saving {link}')
             self.save(link)
@@ -66,9 +74,9 @@ class WaybackArchive:
 
     # This method will save a given website link on the wayback machine
     def save(self, site: str) -> None:
-        main = 'https://web.archive.org/save'
+        main = 'https://web.archive.org/save/'
         try:
-            response = requests.get(main+site, timeout=20)
+            response = self.session.get(main+site, timeout=20,headers=self.headers)
             print("done")
         except requests.exceptions.Timeout:
             print("TIMEOUT:", site)
