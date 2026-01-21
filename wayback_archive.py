@@ -76,7 +76,7 @@ class WaybackArchive:
     def save(self, site: str) -> None:
         main = 'https://web.archive.org/save/'
         try:
-            response = self.session.get(main+site, timeout=20,headers=self.headers)
+            response = self.session.get(main+site, timeout=20)
             print("done")
         except requests.exceptions.Timeout:
             print("TIMEOUT:", site)
