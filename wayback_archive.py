@@ -71,7 +71,11 @@ class WaybackArchive:
             response = requests.get(main+site, timeout=20)
             print("done")
         except requests.exceptions.Timeout:
-            print("Request took too long and was aborted")
+            print("TIMEOUT:", site)
+        except requests.exceptions.ConnectionError as e:
+            print("CONNECTION ERROR:", site)
+        except requests.exceptions.RequestException as e:
+            print("REQUEST FAILED:", site)
 
 
 if __name__ == "__main__":
