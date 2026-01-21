@@ -52,13 +52,14 @@ class WaybackArchive:
                     self.found_links.append(links[0])
                     links.pop(0)
         random.shuffle(self.found_links)
+        print("done finding links")
 
     # This method will save all the links on the wayback machine
     def save_all(self)->None:
         for link in self.found_links:
             print(f'saving {link}')
             self.save(link)
-            # the code stops working if it has passed 55 minutes
+            # the code stops working if it has passed 3 hours and 55 minutes
             if self.late_checker():
                 break
             time.sleep(2)
